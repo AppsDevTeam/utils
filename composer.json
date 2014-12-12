@@ -1,0 +1,16 @@
+{
+    "name": "adt/utils",
+    "description": "Utilities",
+
+    "authors": [
+        {
+            "name": "studnaa",
+            "email": "vojtech.studenka@gmail.com"
+        }
+    ],
+
+    "autoload": {
+        "classmap": ["src/"]
+    }
+
+}
