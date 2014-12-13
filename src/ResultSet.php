@@ -1,6 +1,8 @@
 <?php
 namespace ADT\Utils;
 
+use \Doctrine\ORM\AbstractQuery;
+
 class ResultSet {
 
 	/**
@@ -11,7 +13,7 @@ class ResultSet {
 	 * @return array
 	 */
 	public static function getPairs(\Kdyby\Doctrine\ResultSet $resultSet, $key, $value = NULL) {
-		return array_column($resultSet->toArray(), $value, $key);
+		return array_column($resultSet->toArray(AbstractQuery::HYDRATE_ARRAY), $value, $key);
 	}
 
 }
