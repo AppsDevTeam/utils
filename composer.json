@@ -8,10 +8,7 @@
             "email": "vojtech.studenka@gmail.com"
         }
     ],
-    "require": {
-      "php": ">=5.5.0",
-      "guzzlehttp/guzzle": "^6.3"
-    },
+
     "autoload": {
         "classmap": ["src/"]
     }

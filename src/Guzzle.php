@@ -1,7 +1,7 @@
 <?php
 namespace ADT\Utils;
 
-class Utils {
+class Guzzle {
 
 	/**
 	 * Returns TRUE if everything is allright, FALSE if it's repetable error, otherwise throws exception
@@ -9,7 +9,7 @@ class Utils {
 	 * \GuzzleHttp\Exception\GuzzleException $guzzleException
 	 * @return boolean|\GuzzleHttp\Exception\GuzzleException
 	 */
-	public static function handleGuzzleError(\GuzzleHttp\Exception\GuzzleException $guzzleException) {
+	public static function handleError(\GuzzleHttp\Exception\GuzzleException $guzzleException) {
 
 		if ($guzzleException instanceof \GuzzleHttp\Exception\ConnectException) {
 			// HTTP Code 0
