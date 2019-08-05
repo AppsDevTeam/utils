@@ -19,7 +19,7 @@ Trait CommandLock {
 	 *	=== Example class body ===
 	 *
 	 *	use \ADT\Utils\CommandLock;
-	 *  /** @var \ADT\Utils\CommandLockPathProvider * /
+	 *	/** @var \ADT\Utils\CommandLockPathProvider * /
 	 *	protected $commandLockPathProvider;
 	 *
 	 *	protected function initialize(InputInterface $input, OutputInterface $output) {
@@ -91,6 +91,8 @@ Trait CommandLock {
 		// If process id in file matches the current process' id, it is owned
 		// by the current process and can be safely removed
 		if ($stream === false || strlen(($line = fgets($stream))) === 0 || intval($line) === getmypid()) {
+			// Between fclose and unlink calls, the lock is still practically owned by the current process
+			// and atomicity can still be guaranteed
 			fclose($stream);
 			unlink($pathName);
 			return true;
