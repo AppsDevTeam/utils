@@ -39,10 +39,11 @@ Trait CommandLock {
 	 * If file exists but process id in it doesn't belong to any running process, overrides the lock.
 	 * If file exists and process id in it belongs to a running process, fails.
 	 * @param bool $strict If true, failure throws an exception
+	 * @param string $identifier If set, adds a "-$identifier" suffix to the name of the lock file.
 	 * @return bool true in case of success, false otherwise
 	 * @throws \Exception
 	 */
-	protected function tryLock(bool $strict = true) {
+	protected function tryLock(bool $strict = true, $identifier = null) {
 		$folderName = $this->getFolder();
 		if (!file_exists($folderName)) {
 			mkdir($folderName, 0777, true);
@@ -73,19 +74,19 @@ Trait CommandLock {
 	/**
 	 * Tries to unlock a lock.
 	 * Can fail if the lock file has id of another running process.
-	 * KNOWN ISSUE: If lock file doesn't exist, throws an exception
-	 *		nette safe stream converts fopen mode `r+` to `r`
 	 * @param bool $strict If true, failure throws an exception
+	 * @param string $identifier If set, adds a "-$identifier" suffix to the name of the lock file
 	 * @return bool true in case of success, false otherwise
 	 * @throws \Exception
 	 */
-	protected function tryUnlock(bool $strict = false) {
-		$folderName = $this->getFolder();
+	protected function tryUnlock(bool $strict = false, $identifier = null) {
+		$folderName = $this->getFolder($identifier);
 		if (!file_exists($folderName)) {
 			mkdir($folderName, 0777, true);
 		}
-		$pathName = $this->getPath();
-		$stream = fopen($pathName, 'r');
+		$pathName = $this->getPath($identifier);
+		$stream = fopen($pathName, 'a+');
+		fseek($stream, 0);
 		// If the file has no characters, it means it either did not exist
 		// or wasn't owned by any process
 		// If process id in file matches the current process' id, it is owned
@@ -105,16 +106,18 @@ Trait CommandLock {
 		}
 	}
 
-	protected function getPath() {
+	protected function getPath($identifier = null) {
+		$fullName = $this->getName() . (is_string($identifier) ? "-$identifier" : '');
 		if (in_array('nette.safe', stream_get_wrappers())) {
-			return 'nette.safe://' . $this->commandLockPathProvider->getPath($this->getName());
+			return 'nette.safe://' . $this->commandLockPathProvider->getPath($fullName);
 		}
 		else {
-			return $this->commandLockPathProvider->getPath($this->getName());
+			return $this->commandLockPathProvider->getPath($fullName);
 		}
 	}
 
-	protected function getFolder() {
-		return $this->commandLockPathProvider->getFolder($this->getName());
+	protected function getFolder($identifier = null) {
+		$fullName = $this->getName() . (is_string($identifier) ? "-$identifier" : '');
+		return $this->commandLockPathProvider->getFolder($fullName);
 	}
 }

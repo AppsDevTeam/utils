@@ -31,8 +31,8 @@ class CommandLockPathProvider {
 		}
 	}
 
-	public function getPath(string $commandName) {
-		$commandName = preg_replace('/[^a-zA-Z0-9]/', '-', $commandName);
+	public function getPath(string $commandName = '') {
+		$commandName = preg_replace('/[^-a-zA-Z0-9]/', '-', $commandName);
 		return str_replace('$cmd$', $commandName, $this->lockPath);
 	}
 
