@@ -44,7 +44,7 @@ Trait CommandLock {
 	 * @throws \Exception
 	 */
 	protected function tryLock(bool $strict = true, $identifier = null) {
-		$folderName = $this->getFolder();
+		$folderName = $this->getFolder($identifier);
 		if (!file_exists($folderName)) {
 			mkdir($folderName, 0777, true);
 		}
