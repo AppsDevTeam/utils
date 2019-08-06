@@ -48,7 +48,7 @@ Trait CommandLock {
 		if (!file_exists($folderName)) {
 			mkdir($folderName, 0777, true);
 		}
-		$pathName = $this->getPath();
+		$pathName = $this->getPath($identifier);
 		$stream = fopen($pathName, 'a+');
 		fseek($stream, 0);
 		$line = fgets($stream);
