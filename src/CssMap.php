@@ -21,7 +21,7 @@ trait CssMap {
 	 * @return array
 	 */
 	private function loadFromWebpack($moduleName = 'index', $dir = NULL) {
-		$dir = $dir ? $dir : $dir = (dirname($this->getReflection()->getFileName()));;
+		$dir = $dir ? $dir : dirname($this->getReflection()->getFileName());
 		$filePath = $dir . "/$moduleName.module.scss.json";
 
 		if (! file_exists($filePath)) {
