@@ -2,16 +2,26 @@
 namespace ADT\Utils;
 
 
-class CssMapLoader {
+trait CssMap {
 	/**
-	 * Looks for $moduleName.module.scss.json in $dir path and returns
+	 * Automatically adds className map to template on attached
+	 */
+	public function injectCssMapFromWebpack() {
+		$this->onAfterAttached[] = function() {
+			$this->template->className = $this->loadFromWebpack();
+		};
+	}
+
+	/**
+	 * Looks for $moduleName.module.scss.json in current directory and returns
 	 * content as array on success
 	 *
-	 * @param string $dir
-	 * @param string|null $moduleName
+	 * @param string $moduleName
+	 * @param string|null $dir
 	 * @return array
 	 */
-	public static function fromWebpack($dir, $moduleName = 'index') {
+	private function loadFromWebpack($moduleName = 'index', $dir = NULL) {
+		$dir = $dir ? $dir : $dir = (dirname($this->getReflection()->getFileName()));;
 		$filePath = $dir . "/$moduleName.module.scss.json";
 
 		if (! file_exists($filePath)) {
