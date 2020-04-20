@@ -1,14 +1,16 @@
 <?php
+
 namespace ADT\Utils;
 
-
-trait CssMap {
+trait CssModule 
+{
 	/**
 	 * Automatically adds className map to template on attached
 	 */
-	public function injectCssMapFromWebpack() {
+	public function injectCssModule() 
+	{
 		$this->onAfterAttached[] = function() {
-			$this->template->className = $this->loadFromWebpack();
+			$this->template->className = $this->load();
 		};
 	}
 
@@ -19,7 +21,8 @@ trait CssMap {
 	 * @param string|null $dir
 	 * @return array
 	 */
-	private function loadFromWebpack(string $moduleName = 'index', string $dir = NULL): array {
+	private function load(string $moduleName = 'index', string $dir = NULL): array 
+	{
 		$dir = $dir ?? dirname($this->getReflection()->getFileName());
 		$filePath = $dir . "/$moduleName.module.scss.json";
 
