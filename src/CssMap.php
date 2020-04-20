@@ -15,13 +15,12 @@ trait CssMap {
 	/**
 	 * Looks for $moduleName.module.scss.json in current directory and returns
 	 * content as array on success
-	 *
 	 * @param string $moduleName
 	 * @param string|null $dir
 	 * @return array
 	 */
-	private function loadFromWebpack($moduleName = 'index', $dir = NULL) {
-		$dir = $dir ? $dir : dirname($this->getReflection()->getFileName());
+	private function loadFromWebpack(string $moduleName = 'index', ?string $dir = NULL): array {
+		$dir = $dir ?? dirname($this->getReflection()->getFileName());
 		$filePath = $dir . "/$moduleName.module.scss.json";
 
 		if (! file_exists($filePath)) {
