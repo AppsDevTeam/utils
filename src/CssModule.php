@@ -9,7 +9,7 @@ trait CssModule
 	 */
 	public function injectCssModule() 
 	{
-		$this->onAfterAttached[] = function() {
+		$this->onAfterInit[] = function() {
 			$this->template->className = $this->load();
 		};
 	}
