@@ -4,13 +4,15 @@ namespace ADT\Utils;
 
 trait CssModule 
 {
+	private $className;
+	
 	/**
 	 * Automatically adds className map to template on attached
 	 */
 	public function injectCssModule() 
 	{
-		$this->onAfterInit[] = function() {
-			$this->template->className = $this->load();
+		$this->onBeforeInit[] = function() {
+			$this->template->className = $this->className = $this->load();
 		};
 	}
 
