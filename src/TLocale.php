@@ -14,7 +14,7 @@ trait TLocale
 
 	public function injectLocale()
 	{
-		$this->onStartup[] = function($xxx) {
+		$this->onStartup[] = function() {
 			$locale = $this->locale;
 
 			// uzivatel se prepl na jinou lokalizaci pomoci odkazu na strance
