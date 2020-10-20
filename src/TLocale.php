@@ -7,7 +7,7 @@ use Nette\Localization\ITranslator;
 trait TLocale
 {
 	/** @persistent */
-	public ?string $locale;
+	public ?string $locale = null;
 
 	/** @var ITranslator @autowire */
 	protected ?ITranslator $translator;
@@ -25,15 +25,18 @@ trait TLocale
 
 				setcookie('locale', $locale, time() + (3600 * 24 * 14), '/');
 			}
-			// pokud nelze lokalizaci urcit z url adresy,
-			// pokusime se nejvhodnejsi urcit z COOKIE nebo z jazyka prohlizece,
-			// a pripadne na ni presmerovat
-			elseif ($locale === null || $locale === $this->translator->getDefaultLocale()) {
-				// pokud uzivatel dosel na stranky poprve, pokusime se zjistit jazyk prohlizece
-				// a podle nej vybrat nejvhodnejsi locale
-				if (empty($_COOKIE['locale'])) {
-					$lang = substr($this->getHttpRequest()->getHeader('Accept-Language'), 0, 2);
+			// pokud ma uzivatel lokalizaci jiz ulozenou v cookie,
+			// nastavime mu tuto lokalizaci
+			elseif (isset($_COOKIE['locale'])) {
+				$locale = $_COOKIE['locale'];
+			}
+			// pokud uzivatel dosel na stranky poprve, pokusime se zjistit jazyk prohlizece
+			// a podle nej vybrat nejvhodnejsi locale
+			else {
+				$lang = substr($this->getHttpRequest()->getHeader('Accept-Language'), 0, 2);
 
+				// jestlize je nastaven jazyk prohlizece
+				if ($lang) {
 					// pokud jsou stranky lokalizovane do jazyka prohlizece,
 					// nastavime tuto lokalizaci
 					if (in_array($lang, $this->translator->getAvailableLocales())) {
@@ -54,16 +57,14 @@ trait TLocale
 					elseif (in_array('en', $this->translator->getAvailableLocales())) {
 						$locale = 'en';
 					}
-					// pokud neni nastaven jazyk prohlizece (napriklad u robota) a neni nastavena zadna vychozi lokalizace,
-					// nastavime prvni fallback lokalizaci
-					elseif ($locale === null) {
-						$locale = $this->translator->getFallbackLocales()[0];
-					}
-
-					setcookie('locale', $locale, time() + (3600 * 24 * 14), '/');
-				} else {
-					$locale = $_COOKIE['locale'];
 				}
+				// pokud neni nastaven jazyk prohlizece (napriklad u robota) a neni nastavena zadna vychozi lokalizace,
+				// nastavime prvni fallback lokalizaci
+				elseif ($locale === null) {
+					$locale = $this->translator->getFallbackLocales()[0];
+				}
+
+				setcookie('locale', $locale, time() + (3600 * 24 * 14), '/');
 			}
 
 			// pokud jsme urcili ze nejsme na nejvhodnejsi lokalizaci,
@@ -73,6 +74,7 @@ trait TLocale
 			}
 
 			$this->locale = $locale;
+			$this->translator->setLocale($this->locale);
 		};
 
 		$this->onRender[] = function() {
