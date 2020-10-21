@@ -81,8 +81,4 @@ trait TLocale
 			$this->template->locale = $this->locale;
 		};
 	}
-	
-	protected function _() {
-		return call_user_func_array([$this->translator, 'translate'], func_get_args());
-	}
 }
