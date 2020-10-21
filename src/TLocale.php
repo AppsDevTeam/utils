@@ -9,8 +9,8 @@ trait TLocale
 	/** @persistent */
 	public ?string $locale = null;
 
-	/** @var ITranslator @autowire */
-	protected ?ITranslator $translator;
+	/** @var ITranslator @inject */
+	public ?ITranslator $translator;
 
 	public function injectLocale()
 	{
@@ -80,5 +80,10 @@ trait TLocale
 		$this->onRender[] = function() {
 			$this->template->locale = $this->locale;
 		};
+	}
+
+	public function _()
+	{
+		return call_user_func_array([$this->translator, 'translate'], func_get_args());
 	}
 }
