@@ -74,7 +74,6 @@ trait TLocale
 			}
 
 			$this->locale = $locale;
-			$this->translator->setLocale($this->locale);
 		};
 
 		$this->onRender[] = function() {
