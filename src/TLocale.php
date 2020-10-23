@@ -70,7 +70,7 @@ trait TLocale
 			// pokud jsme urcili ze nejsme na nejvhodnejsi lokalizaci,
 			// presmerujeme
 			if ($locale !== $this->locale) {
-				$this->redirect('this', ['locale' => $locale]);
+				$this->redirect('this', ['locale' => $locale, 'switchToLocale' => true]);
 			}
 
 			$this->locale = $locale;
