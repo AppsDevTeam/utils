@@ -3,11 +3,8 @@
 namespace Adt\Utils;
 
 use ADT\Utils\IRouteFactory;
-use App\Modules\WebModule\BasePresenter;
-use Nette\Application\Application;
 use Nette\Application\BadRequestException;
 use Nette\Application\Helpers;
-use Nette\Http\Response;
 use Nette\Routing\Router;
 use Tracy\Debugger;
 use Tracy\ILogger;
