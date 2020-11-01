@@ -14,6 +14,7 @@ trait TErrorPresenter
 	protected $exception;
 	
 	protected bool $log404 = false;
+	protected bool $log500 = true;
 
 	public function __construct(Router $router, IRouteFactory $routeFactory)
 	{
@@ -50,9 +51,6 @@ trait TErrorPresenter
 				if (isset($params[static::SIGNAL_KEY]) && $params['do'] === '404') {
 					$this->handle404();
 				}
-			} 
-			else {
-				Debugger::log($this->exception, ILogger::EXCEPTION);
 			}
 		};
 	}
@@ -65,13 +63,17 @@ trait TErrorPresenter
 	
 	public function onShutdown()
 	{
-		if ($this->log404) {
+		if ($this->exception instanceof BadRequestException && $this->log404) {
 			register_shutdown_function(function () {
 				echo "<script>" . PHP_EOL;
 				require __DIR__ . '/assets/bot-detector.js';
 				echo "new BotDetector({ callback: function(result) { if (!result.isBot) navigator.sendBeacon('" . $this->link('404!') . "'); } }).monitor();" . PHP_EOL;
 				echo "</script>";
 			});
+		}
+
+		if (!$this->exception instanceof BadRequestException && $this->log500) {
+			Debugger::log($this->exception, ILogger::EXCEPTION);
 		}
 	}
 }
