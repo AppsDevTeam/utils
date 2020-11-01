@@ -2,7 +2,6 @@
 
 namespace ADT\Utils;
 
-use Nette\Http\Request;
 use Nette\Http\Url;
 use Nette\Http\UrlScript;
 use Nette\Localization\ITranslator;
