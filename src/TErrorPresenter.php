@@ -49,15 +49,15 @@ trait TErrorPresenter
 				// je potreba resit rucne, protoze vyhodnocovani signalu probehlo jeste pred FORWARDovanim do ErrorPresenteru
 				// v ErrorPresenteru uz se nic nevyhodnocuje
 				if (isset($params[static::SIGNAL_KEY]) && $params['do'] === '404') {
-					$this->handle404();
+					$this->handle404($params['referrer'] ?? null);
 				}
 			}
 		};
 	}
 
-	public function handle404()
+	public function handle404(?string $referrer)
 	{
-		Debugger::log('Error 404 with referer ' . $this->getHttpRequest()->getReferer() . ' (' . $_SERVER['HTTP_USER_AGENT'] . '; ' . $_SERVER['REMOTE_ADDR'] . ')', '404');
+		Debugger::log('Error 404 with ' . ($referrer ?: 'no' ) . ' referrer (' . $_SERVER['HTTP_USER_AGENT'] . '; ' . $_SERVER['REMOTE_ADDR'] . ')', '404');
 		die();
 	}
 	
@@ -67,7 +67,7 @@ trait TErrorPresenter
 			register_shutdown_function(function () {
 				echo "<script>" . PHP_EOL;
 				require __DIR__ . '/assets/bot-detector.js';
-				echo "new BotDetector({ callback: function(result) { if (!result.isBot) navigator.sendBeacon('" . $this->link('404!') . "'); } }).monitor();" . PHP_EOL;
+				echo "new BotDetector({ callback: function(result) { if (!result.isBot) navigator.sendBeacon('" . $this->link('404!', ['referrer' => $this->getHttpRequest()->getReferer() ? $this->getHttpRequest()->getReferer()->getAbsoluteUrl() : null]) . "'); } }).monitor();" . PHP_EOL;
 				echo "</script>";
 			});
 		}
