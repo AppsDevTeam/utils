@@ -16,6 +16,9 @@ trait TErrorPresenter
 	protected bool $log404 = false;
 	protected bool $log500 = true;
 
+	/** @persistent */
+	public $url;
+
 	public function __construct(Router $router, IRouteFactory $routeFactory)
 	{
 		parent::__construct();
@@ -30,7 +33,7 @@ trait TErrorPresenter
 				if ($routeList->getModule() === $moduleName . ':') {
 					// vytvorime routu v presnem zneni soucasne url adresy
 					$url = $this->getHttpRequest()->getUrl()->getPath();
-					$route = $routeFactory->create('<url=' . $this->getHttpRequest()->getUrl()->getPath() . ' .*>', $presenterName . ':' . $this->getAction());
+					$route = $routeFactory->create('<url .*>', $presenterName . ':' . $this->getAction());
 
 					// je potreba novou routu umistit na zacatek, aby se nam pouzila pri constructUrl
 					$routeList->prepend($route);
