@@ -29,18 +29,25 @@ trait TErrorPresenter
 			// nemusi existovat zadna routa odpovidajici zadane url
 			// abychom mohli pouzivat $this->link('this'), musime vytvorit routu, ktera matchne zadanou url
 			[$moduleName, $presenterName] = Helpers::splitName($this->getName());
-			foreach ($router->getRouters() as $routeList) {
-				if ($routeList->getModule() === $moduleName . ':') {
-					// vytvorime routu v presnem zneni soucasne url adresy
-					$url = $this->getHttpRequest()->getUrl()->getPath();
-					$route = $routeFactory->create('<url .*>', $presenterName . ':' . $this->getAction());
 
-					// je potreba novou routu umistit na zacatek, aby se nam pouzila pri constructUrl
-					$routeList->prepend($route);
+			if ($moduleName) {
+				foreach ($router->getRouters() as $_routeList) {
+					if ($routeList->getModule() === $moduleName . ':') {
+						$routeList = $_routeList;
 
-					break;
+						break;
+					}
 				}
+			} else {
+				$routeList = $router;
 			}
+
+			// vytvorime routu v presnem zneni soucasne url adresy
+			$url = $this->getHttpRequest()->getUrl()->getPath();
+			$route = $routeFactory->create('<url .*>', $presenterName . ':' . $this->getAction());
+
+			// je potreba novou routu umistit na zacatek, aby se nam pouzila pri constructUrl
+			$routeList->prepend($route);
 
 			$params = $route->match($this->getHttpRequest());
 
@@ -55,6 +62,17 @@ trait TErrorPresenter
 					$this->handle404($params['referrer'] ?? null);
 				}
 			}
+
+			register_shutdown_function(function () {
+				if ($this->exception instanceof BadRequestException && $this->log404) {
+					echo "<script>" . PHP_EOL;
+					require __DIR__ . '/assets/bot-detector.js';
+					echo "new BotDetector({ callback: function(result) { if (!result.isBot) navigator.sendBeacon('" . $this->link('404!', ['referrer' => $this->getHttpRequest()->getReferer() ? $this->getHttpRequest()->getReferer()->getAbsoluteUrl() : null]) . "'); } }).monitor();" . PHP_EOL;
+					echo "</script>";
+				} elseif (!$this->exception instanceof BadRequestException && $this->log500) {
+					Debugger::log($this->exception, ILogger::EXCEPTION);
+				}
+			});
 		};
 	}
 
@@ -62,21 +80,5 @@ trait TErrorPresenter
 	{
 		Debugger::log('Error 404 with ' . ($referrer ?: 'no' ) . ' referrer (' . $_SERVER['HTTP_USER_AGENT'] . '; ' . $_SERVER['REMOTE_ADDR'] . ')', '404');
 		die();
-	}
-	
-	public function onShutdown()
-	{
-		if ($this->exception instanceof BadRequestException && $this->log404) {
-			register_shutdown_function(function () {
-				echo "<script>" . PHP_EOL;
-				require __DIR__ . '/assets/bot-detector.js';
-				echo "new BotDetector({ callback: function(result) { if (!result.isBot) navigator.sendBeacon('" . $this->link('404!', ['referrer' => $this->getHttpRequest()->getReferer() ? $this->getHttpRequest()->getReferer()->getAbsoluteUrl() : null]) . "'); } }).monitor();" . PHP_EOL;
-				echo "</script>";
-			});
-		}
-
-		if (!$this->exception instanceof BadRequestException && $this->log500) {
-			Debugger::log($this->exception, ILogger::EXCEPTION);
-		}
 	}
 }
