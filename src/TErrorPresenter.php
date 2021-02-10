@@ -32,7 +32,7 @@ trait TErrorPresenter
 
 			if ($moduleName) {
 				foreach ($router->getRouters() as $_routeList) {
-					if ($routeList->getModule() === $moduleName . ':') {
+					if ($_routeList->getModule() === $moduleName . ':') {
 						$routeList = $_routeList;
 
 						break;
