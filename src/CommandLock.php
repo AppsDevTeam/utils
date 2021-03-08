@@ -107,7 +107,7 @@ Trait CommandLock {
 	}
 
 	protected function getPath($identifier = null) {
-		$fullName = $this->getName() . (is_string($identifier) ? "-$identifier" : '');
+		$fullName = static::getFullName($this->getName(), $identifier);
 		if (in_array('nette.safe', stream_get_wrappers())) {
 			return 'nette.safe://' . $this->commandLockPathProvider->getPath($fullName);
 		}
@@ -117,7 +117,12 @@ Trait CommandLock {
 	}
 
 	protected function getFolder($identifier = null) {
-		$fullName = $this->getName() . (is_string($identifier) ? "-$identifier" : '');
+		$fullName = static::getFullName($this->getName(), $identifier);
 		return $this->commandLockPathProvider->getFolder($fullName);
+	}
+
+	public static function getFullName($name, $identifier)
+	{
+		return $name . (is_string($identifier) ? "-$identifier" : '');
 	}
 }
