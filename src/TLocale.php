@@ -73,6 +73,11 @@ trait TLocale
 				$this->redirect('this', ['locale' => $locale, 'originalLocale' => $this->locale]);
 			}
 
+			// pokud klikneme na lokalizaci, ktera je jiz aktualni
+			if ($this->getParameter('switchToLocale')) {
+				$this->redirect('this', ['switchToLocale' => null]);
+			}
+
 			$this->locale = $locale;
 		};
 
