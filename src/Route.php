@@ -35,6 +35,10 @@ class Route extends \Nette\Application\Routers\Route
 	{
 		$url = parent::constructUrl($params, $refUrl);
 
+		$url = new Url($url);
+		$url->setQueryParameter('originalLocale', null);
+		$url = (string) $url;
+
 		if ($url !== null && !in_array($refUrl->getPort(), Url::$defaultPorts, true)) {
 			$nurl = new Url($url);
 			$nurl->setPort($refUrl->getPort());
