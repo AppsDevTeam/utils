@@ -2,7 +2,7 @@
 
 namespace ADT\Utils\Translatable;
 
-trait EntityTrait
+trait TranslatableEntityTrait
 {
 	/**
 	 * @Gedmo\Locale
