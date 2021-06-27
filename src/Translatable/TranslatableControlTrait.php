@@ -1,6 +1,6 @@
 <?php
 
-namespace ADT\Utils;
+namespace ADT\Utils\Translatable;
 
 use ADT\DoctrineForms\Entity;
 use ADT\DoctrineForms\EntityFormMapper;
@@ -9,12 +9,12 @@ use ADT\Forms\DynamicContainer;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Nette\Forms\Controls\BaseControl;
 
-trait TranslationControlTrait
+trait TranslatableControlTrait
 {
 	public function addTranslation(Form $form, $name, $containerFactory)
 	{
 		$container = $form->addDynamicContainer($name, $containerFactory);
-		
+
 		$form
 			->setComponentFormMapper($container, function (EntityFormMapper $mapper, DynamicContainer $container, Entity $entity) {
 				$meta = $mapper->getMetadata($entity);
