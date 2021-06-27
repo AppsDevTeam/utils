@@ -1,6 +1,6 @@
 <?php
 
-namespace ADT\Utils;
+namespace ADT\Utils\Translatable;
 
 use ADT\BaseForm\EntityForm;
 use ADT\DoctrineForms\EntityFormMapper;
@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Nette\Forms\Controls\BaseControl;
 
-trait TranslationControlTrait
+trait ControlTrait
 {
 	public function addTranslation(EntityForm $form, $name, $containerFactory)
 	{
