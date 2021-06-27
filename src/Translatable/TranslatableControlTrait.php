@@ -1,27 +1,23 @@
 <?php
 
-namespace ADT\Utils\Translatable;
+namespace ADT\Utils;
 
-use ADT\BaseForm\EntityForm;
+use ADT\DoctrineForms\Entity;
 use ADT\DoctrineForms\EntityFormMapper;
-use ADT\DoctrineForms\ToManyContainer;
-use App\Model\Entity\ITranslatable;
-use Doctrine\ORM\Mapping\ClassMetadata;
+use ADT\DoctrineForms\Form;
+use ADT\Forms\DynamicContainer;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Nette\Forms\Controls\BaseControl;
 
-trait TranslatableControlTrait
+trait TranslationControlTrait
 {
-	public function addTranslation(EntityForm $form, $name, $containerFactory)
+	public function addTranslation(Form $form, $name, $containerFactory)
 	{
+		$container = $form->addDynamicContainer($name, $containerFactory);
+		
 		$form
-			->toMany(
-				$name,
-				$containerFactory
-			)
-			->setFormMapper(function (ClassMetadata $meta, ToManyContainer $container, ITranslatable $entity) {
-				/** @var EntityFormMapper $mapper */
-				$mapper = $this->mapper;
+			->setComponentFormMapper($container, function (EntityFormMapper $mapper, DynamicContainer $container, Entity $entity) {
+				$meta = $mapper->getMetadata($entity);
 
 				/** @var TranslationRepository $repository */
 				$repository = $mapper->getEntityManager()->getRepository('Gedmo\Translatable\Entity\Translation');
@@ -34,10 +30,7 @@ trait TranslatableControlTrait
 					$container[$_locale]['locale']->setDefaultValue($_locale);
 				}
 			})
-			->setEntityMapper(function (ClassMetadata $meta, ToManyContainer $container, ITranslatable $entity) {
-				/** @var EntityFormMapper $mapper */
-				$mapper = $this->mapper;
-
+			->setComponentEntityMapper($container, function (EntityFormMapper $mapper, DynamicContainer $container, Entity $entity) {
 				// delete removed locales
 				$locales = [];
 				foreach ($container->getComponents(false) as $_toOneContainer) {
