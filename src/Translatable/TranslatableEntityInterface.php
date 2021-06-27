@@ -2,7 +2,7 @@
 
 namespace ADT\Utils\Translatable;
 
-interface EntityInterface
+interface TranslatableEntityInterface
 {
 	public function getId();
 	public function setTranslatableLocale($locale);
