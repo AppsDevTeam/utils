@@ -2,7 +2,7 @@
 
 namespace ADT\Utils\Translatable;
 
-class Listener extends \Gedmo\Translatable\TranslatableListener
+class TranslatableListener extends \Gedmo\Translatable\TranslatableListener
 {
 	public function __construct()
 	{
