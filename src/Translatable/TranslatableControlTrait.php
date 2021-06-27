@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping\ClassMetadata;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Nette\Forms\Controls\BaseControl;
 
-trait ControlTrait
+trait TranslatableControlTrait
 {
 	public function addTranslation(EntityForm $form, $name, $containerFactory)
 	{
