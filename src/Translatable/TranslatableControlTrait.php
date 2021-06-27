@@ -14,7 +14,7 @@ trait TranslatableControlTrait
 	public function addTranslation(Form $form, $name, $containerFactory)
 	{
 		$container = $form->addDynamicContainer($name, $containerFactory);
-		
+
 		$form
 			->setComponentFormMapper($container, function (EntityFormMapper $mapper, DynamicContainer $container, Entity $entity) {
 				$meta = $mapper->getMetadata($entity);
