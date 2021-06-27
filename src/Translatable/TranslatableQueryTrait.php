@@ -9,7 +9,7 @@ use Gedmo\Translatable\TranslatableListener;
 use Kdyby\Persistence\Queryable;
 use Nette\Localization\ITranslator;
 
-abstract class BaseQuery extends \ADT\BaseQuery\BaseQuery implements IQueryObject
+abstract class TranslatableBaseQuery extends \ADT\BaseQuery\BaseQuery implements IQueryObject
 {
 	protected ?string $locale = null;
 
