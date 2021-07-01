@@ -8,7 +8,6 @@ use App\Model\Entity\ITranslatable;
 use Doctrine\ORM\Query;
 use Gedmo\Translatable\TranslatableListener;
 use Kdyby\Persistence\Queryable;
-use Nette\Localization\ITranslator;
 
 trait TranslatableQueryTrait
 {
