@@ -30,7 +30,7 @@ trait TranslatableQueryTrait
 	protected function getQuery(Queryable $repository)
 	{
 		$query = parent::getQuery($repository);
-		if (is_a($this->getEntityClass(), ITranslatable::class, true)) {
+		if (is_a($this->getEntityClass(), TranslatableEntityInterface::class, true)) {
 			$query->setHint(
 				Query::HINT_CUSTOM_OUTPUT_WALKER,
 				'Gedmo\\Translatable\\Query\\TreeWalker\\TranslationWalker'
