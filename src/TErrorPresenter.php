@@ -1,6 +1,6 @@
 <?php
 
-namespace Adt\Utils;
+namespace ADT\Utils;
 
 use ADT\Utils\IRouteFactory;
 use Nette\Application\BadRequestException;
