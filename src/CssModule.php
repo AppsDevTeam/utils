@@ -11,7 +11,7 @@ trait CssModule
 	 */
 	public function injectCssModule() 
 	{
-		$this->onBeforeInit[] = function() {
+		$this->onBeforeInitForm[] = function() {
 			$this->template->className = $this->className = $this->load();
 		};
 	}
