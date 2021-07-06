@@ -7,15 +7,16 @@ use ADT\DoctrineForms\EntityFormMapper;
 use ADT\DoctrineForms\Form;
 use ADT\Forms\DynamicContainer;
 use App\Components\Forms\Base\EntityForm;
+use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Gedmo\Sluggable\SluggableListener;
 use Gedmo\Translatable\Entity\Repository\TranslationRepository;
 use Nette\Forms\Controls\BaseControl;
 
-trait TranslatableSluggableTrait
+trait TranslatableSluggableFormTrait
 {
-	abstract public function getForm(): EntityForm;
+	abstract public function getEntityManager(): EntityManager;
 	
 	abstract protected function getSluggableListener(): SluggableListener;
 
@@ -27,10 +28,8 @@ trait TranslatableSluggableTrait
 	 */
 	private function generateSlug(TranslatableEntityInterface $entity, string $sourceField = 'name', string $field = 'slug')
 	{
-		$form = $this->getForm();
-
 		/** @var TranslationRepository $repository */
-		$repository = $form->getEntityManager()->getRepository('Gedmo\Translatable\Entity\Translation');
+		$repository = $this->getEntityManager()->getRepository('Gedmo\Translatable\Entity\Translation');
 
 		foreach ($repository->findTranslations($entity) as $_locale => $_translation) {
 			$slug = $_translation[$sourceField];
