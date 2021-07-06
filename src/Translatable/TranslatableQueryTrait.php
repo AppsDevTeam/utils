@@ -49,12 +49,12 @@ trait TranslatableQueryTrait
 				$this->locale ?: $this->translator->getLocale()
 			);
 
-			if ($this->defaultLocaleFallback) {
-				$query->setHint(
-					TranslatableListener::HINT_FALLBACK,
-					true
-				);
+			$query->setHint(
+				TranslatableListener::HINT_FALLBACK,
+				true
+			);
 
+			if (!$this->defaultLocaleFallback) {
 				$query->setHint(
 					TranslatableListener::HINT_INNER_JOIN,
 					true
