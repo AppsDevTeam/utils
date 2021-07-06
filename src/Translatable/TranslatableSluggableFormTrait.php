@@ -22,46 +22,52 @@ trait TranslatableSluggableFormTrait
 
 	/**
 	 * @param TranslatableEntityInterface $entity
-	 * @param string $sourceField
-	 * @param string $field
 	 * @throws NonUniqueResultException
 	 */
-	private function generateSlug(TranslatableEntityInterface $entity, string $sourceField = 'name', string $field = 'slug')
+	private function generateSlug(TranslatableEntityInterface $entity)
 	{
 		/** @var TranslationRepository $repository */
 		$repository = $this->getEntityManager()->getRepository('Gedmo\Translatable\Entity\Translation');
 
 		foreach ($repository->findTranslations($entity) as $_locale => $_translation) {
-			$slug = $_translation[$sourceField];
-			$slug = $this->getSluggableListener()->getTransliterator()($slug);
-			$slug = $this->getSluggableListener()->getUrlizer()($slug);
-
-			$originalSlug = $slug;
-			$counter = 1;
-			while (true) {
-				try {
-					$repository->createQueryBuilder('e')
-						->where('e.locale = :locale')
-						->andWhere('e.objectClass = :objectClass')
-						->andWhere('e.content = :content')
-						->andWhere('e.foreignKey != :foreignKey')
-						->andWhere('e.field = :field')
-						->setParameters([
-							'locale' => $_locale,
-							'objectClass' => get_class($entity),
-							'content' => $slug,
-							'foreignKey' => $entity->getId(),
-							'field' => $field,
-						])
-						->getQuery()
-						->getSingleResult();
-
-					$slug = $originalSlug . '-' . $counter++;
-				} catch (NoResultException $e) {
-					break;
+			foreach ($this->getSluggableListener()->getConfiguration($this->getEntityManager(), get_class($entity))['slugs'] as $slugField => $options) {
+				$_slugs = [];
+				foreach ($options['fields'] as $_field) {
+					$slug = $_translation[$_field];
+					$slug = $this->getSluggableListener()->getTransliterator()($slug);
+					$slug = $this->getSluggableListener()->getUrlizer()($slug);
+					$_slugs[] = $slug;
 				}
+				$slug = implode('-', $_slugs);
+
+				$originalSlug = $slug;
+				$counter = 1;
+				while (true) {
+					try {
+						$repository->createQueryBuilder('e')
+							->where('e.locale = :locale')
+							->andWhere('e.objectClass = :objectClass')
+							->andWhere('e.content = :content')
+							->andWhere('e.foreignKey != :foreignKey')
+							->andWhere('e.field = :field')
+							->setParameters([
+								'locale' => $_locale,
+								'objectClass' => get_class($entity),
+								'content' => $slug,
+								'foreignKey' => $entity->getId(),
+								'field' => $slugField,
+							])
+							->getQuery()
+							->getSingleResult();
+
+						$slug = $originalSlug . '-' . $counter++;
+					} catch (NoResultException $e) {
+						break;
+					}
+				}
+
+				$repository->translate($entity, $slugField, $_locale, $slug);
 			}
-			$repository->translate($entity, $field, $_locale, $slug);
 		}
 	}
 }
