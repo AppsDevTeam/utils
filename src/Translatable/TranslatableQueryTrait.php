@@ -15,15 +15,23 @@ trait TranslatableQueryTrait
 
 	protected ITranslator $translator;
 
+	protected bool $defaultLocaleFallback = true;
+
 	public function setLocale(string $locale): self
 	{
-		$this->translator = $locale;
+		$this->locale = $locale;
 		return $this;
 	}
 
 	public function setTranslator(ITranslator $translator): self
 	{
 		$this->translator = $translator;
+		return $this;
+	}
+
+	public function disableDefaultLocaleFallback(): self
+	{
+		$this->defaultLocaleFallback = false;
 		return $this;
 	}
 
@@ -41,10 +49,17 @@ trait TranslatableQueryTrait
 				$this->locale ?: $this->translator->getLocale()
 			);
 
-			$query->setHint(
-				TranslatableListener::HINT_INNER_JOIN,
-				true
-			);
+			if ($this->defaultLocaleFallback) {
+				$query->setHint(
+					TranslatableListener::HINT_FALLBACK,
+					true
+				);
+
+				$query->setHint(
+					TranslatableListener::HINT_INNER_JOIN,
+					true
+				);
+			}
 		}
 
 		return $query;
