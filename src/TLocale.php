@@ -28,6 +28,11 @@ trait TLocale
 			// pokud ma uzivatel lokalizaci jiz ulozenou v cookie,
 			// nastavime mu tuto lokalizaci
 			elseif (isset($_COOKIE['locale'])) {
+				if (!in_array($_COOKIE['locale'], $this->translator->getAvailableLocales())) {
+					setcookie('locale', $locale, time() - 1, '/');
+					$this->redirect('this');
+				}
+
 				$locale = $_COOKIE['locale'];
 			}
 			// pokud uzivatel dosel na stranky poprve, pokusime se zjistit jazyk prohlizece
