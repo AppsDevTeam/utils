@@ -55,7 +55,7 @@ trait TLocale
 					// pokud jazyk prohlizece je cestina a stranky jsou lokalizovane do slovenstiny,
 					// nastavime slovenstinu
 					elseif ($lang === 'cs' && in_array('sk', $this->translator->getAvailableLocales())) {
-						$locale = 'cs';
+						$locale = 'sk';
 					}
 					// pokud nemame stranky lokalizovane do jazyka prohlizece, ale mame je lokalizovane do anglictiny
 					// nastavime anglictinu
