@@ -5,7 +5,9 @@ namespace App\Model\Queries;
 use ADT\QueryObjectDataSource\IQueryObject;
 use ADT\Utils\Translatable\TranslatableEntityInterface;
 use Doctrine\ORM\Query;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Gedmo\Translatable\TranslatableListener;
+use Kdyby\Doctrine\ResultSet;
 use Kdyby\Persistence\Queryable;
 use Nette\Localization\ITranslator;
 
@@ -37,7 +39,26 @@ trait TranslatableQueryTrait
 
 	protected function getQuery(Queryable $repository)
 	{
-		$query = parent::getQuery($repository);
+		return $this->applyHints(parent::getQuery($repository));
+
+
+	}
+
+	public function count(Queryable $repository = null, ResultSet $resultSet = null, Paginator $paginatedQuery = null)
+	{
+		if (is_null($repository)) {
+			$repository = $this->em->getRepository($this->getEntityClass());
+		}
+
+		if ($queryBuilder = $this->doCreateCountQuery($repository)) {
+			return $this->applyHints($queryBuilder->getQuery())->getSingleScalarResult();
+		}
+
+		return parent::count($repository, $resultSet, $paginatedQuery);
+	}
+
+	private function applyHints(Query $query): Query
+	{
 		if (is_a($this->getEntityClass(), TranslatableEntityInterface::class, true)) {
 			$query->setHint(
 				Query::HINT_CUSTOM_OUTPUT_WALKER,
