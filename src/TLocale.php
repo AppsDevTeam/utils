@@ -21,6 +21,10 @@ trait TLocale
 			// tuto lokalizaci mu nastavime do cookie, abychom ho odted vzdy presmerovali na tuto lokalizaci,
 			// pokud prijde na url, ze ktere neni jasna lokalizace
 			if ($this->getParameter('switchToLocale')) {
+				if (!in_array($this->getParameter('switchToLocale'), $this->translator->getAvailableLocales())) {
+					$this->redirect('this', ['switchToLocale' => null]);
+				}
+
 				$locale = $this->getParameter('switchToLocale');
 
 				setcookie('locale', $locale, time() + (3600 * 24 * 14), '/');
