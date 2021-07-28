@@ -19,12 +19,12 @@ class Route extends \Nette\Application\Routers\Route
 {
 	public function __construct(string $mask, $metadata = [], int $flags = 0, $disableLocaleParameter = false, ?ITranslator $translator = null)
 	{
-		$locale = '';
 		if (!$disableLocaleParameter && $translator) {
-			$locale = '[<locale' . ($translator->getDefaultLocale() ? '=' . $translator->getDefaultLocale() : '') . ' ' . implode('|', $translator->getAvailableLocales()) . '>/]';
+			$url = new Url($mask);
+			$mask = $url->getHostUrl() . '/' . str_replace($url->getHostUrl() . '/', '[<locale' . ($translator->getDefaultLocale() ? '=' . $translator->getDefaultLocale() : '') . ' ' . implode('|', $translator->getAvailableLocales()) . '>/]', $mask);
 		}
 
-		parent::__construct($locale . $mask, $metadata, $flags);
+		parent::__construct($mask, $metadata, $flags);
 	}
 
 	/**
