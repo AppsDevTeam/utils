@@ -21,7 +21,10 @@ class Route extends \Nette\Application\Routers\Route
 	{
 		if (!$disableLocaleParameter && $translator) {
 			$url = new Url($mask);
-			$mask = $url->getHostUrl() . '/' . str_replace($url->getHostUrl() . '/', '[<locale' . ($translator->getDefaultLocale() ? '=' . $translator->getDefaultLocale() : '') . ' ' . implode('|', $translator->getAvailableLocales()) . '>/]', $mask);
+			$locale = '[<locale' . ($translator->getDefaultLocale() ? '=' . $translator->getDefaultLocale() : '') . ' ' . implode('|', $translator->getAvailableLocales()) . '>/]';
+			$mask = $url->getHostUrl() ?
+				$url->getHostUrl() . '/' . str_replace($url->getHostUrl() . '/', $locale, $mask) :
+				$locale . $mask;
 		}
 
 		parent::__construct($mask, $metadata, $flags);
