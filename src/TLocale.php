@@ -9,8 +9,8 @@ trait TLocale
 	/** @persistent */
 	public ?string $locale = null;
 
-	/** @var ITranslator @inject */
-	public ?ITranslator $translator;
+	/** @inject */
+	public ITranslator $translator;
 
 	public function injectLocale()
 	{
