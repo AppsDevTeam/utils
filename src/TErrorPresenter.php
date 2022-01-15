@@ -4,6 +4,7 @@ namespace ADT\Utils;
 
 use Nette\Application\BadRequestException;
 use Nette\Application\Helpers;
+use Nette\Application\UI\InvalidLinkException;
 use Nette\Routing\Router;
 use Tracy\Debugger;
 use Tracy\ILogger;
@@ -16,7 +17,7 @@ trait TErrorPresenter
 	protected bool $log500 = true;
 
 	/** @persistent */
-	public $errorUrl;
+	public $url;
 
 	public function __construct(Router $router)
 	{
@@ -32,24 +33,22 @@ trait TErrorPresenter
 			if ($moduleName) {
 				foreach ($router->getRouters() as $_routeList) {
 					if ($_routeList->getModule() === $moduleName . ':') {
+						/** @var \ADT\Routing\RouteList $routeList */
 						$routeList = $_routeList;
 
 						break;
 					}
 				}
 			} else {
+				/** @var \ADT\Routing\RouteList $routeList */
 				$routeList = $router;
 			}
 
 			// vytvorime routu v presnem zneni soucasne url adresy
-			$url = $this->getHttpRequest()->getUrl()->getPath();
-			$routeList->addRoute('[<errorUrl .*>]', $presenterName . ':' . $this->getAction());
+			$route = $routeList->createRoute('[<url .*>]', $presenterName . ':' . $this->getAction());
+			$routeList->prepend($route);
 
-			$params = $routeList->match($this->getHttpRequest());
-
-			// je potreba vzdy naplnit parametr 'errorUrl', aby se nam matchnula vytvorena routa
-			// v opacnem pripade by se nam mohla matchnout nejaka predchozi routa
-			$params['errorUrl'] = $this->getHttpRequest()->getUrl()->getRelativePath();
+			$params = $route->match($this->getHttpRequest());
 
 			// je potreba, aby fungovaly persistentni parametry, napriklad "locale"
 			$this->loadState($params);
