@@ -63,7 +63,7 @@ trait TErrorPresenter
 				}
 			}
 
-			register_shutdown_function(function () use ($router) {
+			register_shutdown_function(function () {
 				if ($this->exception instanceof BadRequestException && $this->log404) {
 					echo "<script>" . PHP_EOL;
 					require __DIR__ . '/assets/bot-detector.js';
