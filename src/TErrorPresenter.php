@@ -4,7 +4,6 @@ namespace ADT\Utils;
 
 use Nette\Application\BadRequestException;
 use Nette\Application\Helpers;
-use Nette\Application\UI\InvalidLinkException;
 use Nette\Routing\Router;
 use Tracy\Debugger;
 use Tracy\ILogger;
