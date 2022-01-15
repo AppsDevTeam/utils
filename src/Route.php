@@ -20,10 +20,10 @@ class Route extends \Nette\Application\Routers\Route
 	public function __construct(string $mask, $metadata = [], int $flags = 0, $disableLocaleParameter = false, ?ITranslator $translator = null)
 	{
 		if (!$disableLocaleParameter && $translator) {
-			$url = new Url($mask);
 			$locale = '[<locale' . ($translator->getDefaultLocale() ? '=' . $translator->getDefaultLocale() : '') . ' ' . implode('|', $translator->getAvailableLocales()) . '>/]';
-			$mask = $url->getHostUrl() ?
-				$url->getHostUrl() . '/' . str_replace($url->getHostUrl() . '/', $locale, $mask) :
+			$hostUrl = (new Url($mask))->getHostUrl();
+			$mask = $hostUrl ?
+				$hostUrl . '/' . ltrim(str_replace($hostUrl, $locale, $mask), '/'):
 				$locale . $mask;
 		}
 
