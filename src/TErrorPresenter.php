@@ -12,7 +12,7 @@ use Tracy\ILogger;
 trait TErrorPresenter
 {
 	protected $exception;
-	
+
 	protected bool $log404 = false;
 	protected bool $log500 = true;
 
@@ -44,7 +44,7 @@ trait TErrorPresenter
 
 			// vytvorime routu v presnem zneni soucasne url adresy
 			$url = $this->getHttpRequest()->getUrl()->getPath();
-			$route = $routeFactory->create('<url .*>', $presenterName . ':' . $this->getAction());
+			$route = $routeFactory->create('[<url .*>]', $presenterName . ':' . $this->getAction());
 
 			// je potreba novou routu umistit na zacatek, aby se nam pouzila pri constructUrl
 			$routeList->prepend($route);
@@ -63,7 +63,7 @@ trait TErrorPresenter
 				}
 			}
 
-			register_shutdown_function(function () {
+			register_shutdown_function(function () use ($router) {
 				if ($this->exception instanceof BadRequestException && $this->log404) {
 					echo "<script>" . PHP_EOL;
 					require __DIR__ . '/assets/bot-detector.js';
