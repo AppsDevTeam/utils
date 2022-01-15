@@ -2,7 +2,6 @@
 
 namespace ADT\Utils;
 
-use ADT\Utils\IRouteFactory;
 use Nette\Application\BadRequestException;
 use Nette\Application\Helpers;
 use Nette\Routing\Router;
@@ -17,13 +16,13 @@ trait TErrorPresenter
 	protected bool $log500 = true;
 
 	/** @persistent */
-	public $url;
+	public $errorUrl;
 
-	public function __construct(Router $router, IRouteFactory $routeFactory)
+	public function __construct(Router $router)
 	{
 		parent::__construct();
 
-		$this->onStartup[] = function() use ($router, $routeFactory) {
+		$this->onStartup[] = function() use ($router) {
 			$this->exception = $this->getRequest()->getParameter('exception');
 
 			// nemusi existovat zadna routa odpovidajici zadane url
@@ -44,12 +43,13 @@ trait TErrorPresenter
 
 			// vytvorime routu v presnem zneni soucasne url adresy
 			$url = $this->getHttpRequest()->getUrl()->getPath();
-			$route = $routeFactory->create('[<url .*>]', $presenterName . ':' . $this->getAction());
+			$routeList->addRoute('[<errorUrl .*>]', $presenterName . ':' . $this->getAction());
 
-			// je potreba novou routu umistit na zacatek, aby se nam pouzila pri constructUrl
-			$routeList->prepend($route);
+			$params = $routeList->match($this->getHttpRequest());
 
-			$params = $route->match($this->getHttpRequest());
+			// je potreba vzdy naplnit parametr 'errorUrl', aby se nam matchnula vytvorena routa
+			// v opacnem pripade by se nam mohla matchnout nejaka predchozi routa
+			$params['errorUrl'] = $this->getHttpRequest()->getUrl()->getRelativePath();
 
 			// je potreba, aby fungovaly persistentni parametry, napriklad "locale"
 			$this->loadState($params);
@@ -63,7 +63,7 @@ trait TErrorPresenter
 				}
 			}
 
-			register_shutdown_function(function () {
+			register_shutdown_function(function () use ($router) {
 				if ($this->exception instanceof BadRequestException && $this->log404) {
 					echo "<script>" . PHP_EOL;
 					require __DIR__ . '/assets/bot-detector.js';
