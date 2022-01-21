@@ -2,7 +2,6 @@
 
 namespace ADT\Utils;
 
-use ADT\Utils\IRouteFactory;
 use Nette\Application\BadRequestException;
 use Nette\Application\Helpers;
 use Nette\Routing\Router;
@@ -12,18 +11,18 @@ use Tracy\ILogger;
 trait TErrorPresenter
 {
 	protected $exception;
-	
+
 	protected bool $log404 = false;
 	protected bool $log500 = true;
 
 	/** @persistent */
 	public $url;
 
-	public function __construct(Router $router, IRouteFactory $routeFactory)
+	public function __construct(Router $router)
 	{
 		parent::__construct();
 
-		$this->onStartup[] = function() use ($router, $routeFactory) {
+		$this->onStartup[] = function() use ($router) {
 			$this->exception = $this->getRequest()->getParameter('exception');
 
 			// nemusi existovat zadna routa odpovidajici zadane url
@@ -33,20 +32,19 @@ trait TErrorPresenter
 			if ($moduleName) {
 				foreach ($router->getRouters() as $_routeList) {
 					if ($_routeList->getModule() === $moduleName . ':') {
+						/** @var \ADT\Routing\RouteList $routeList */
 						$routeList = $_routeList;
 
 						break;
 					}
 				}
 			} else {
+				/** @var \ADT\Routing\RouteList $routeList */
 				$routeList = $router;
 			}
 
 			// vytvorime routu v presnem zneni soucasne url adresy
-			$url = $this->getHttpRequest()->getUrl()->getPath();
-			$route = $routeFactory->create('<url .*>', $presenterName . ':' . $this->getAction());
-
-			// je potreba novou routu umistit na zacatek, aby se nam pouzila pri constructUrl
+			$route = $routeList->createRoute('[<url .*>]', $presenterName . ':' . $this->getAction());
 			$routeList->prepend($route);
 
 			$params = $route->match($this->getHttpRequest());
