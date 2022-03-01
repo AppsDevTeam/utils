@@ -1,9 +1,15 @@
 <?php
 namespace ADT\Utils;
 
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Psr7\Message;
+
 class Guzzle {
 
 	/**
+	 * @deprecated use handleException() instead
 	 * Returns TRUE if everything is allright, FALSE if it's repetable error, otherwise throws exception
 	 *
 	 * \GuzzleHttp\Exception\GuzzleException $guzzleException
@@ -27,4 +33,13 @@ class Guzzle {
 		throw $guzzleException;
 	}
 
+
+	public static function handleException(\Exception $e): ?\Throwable
+	{
+		return $e instanceof ServerException || $e instanceof ConnectException
+			? null
+			: ($e instanceof GuzzleException
+				? new \Exception(Psr7\Message::toString($e->getResponse()))
+				: $e);
+	}
 }
