@@ -38,8 +38,10 @@ class Guzzle {
 	{
 		return $e instanceof ServerException || $e instanceof ConnectException
 			? null
-			: ($e instanceof GuzzleException
-				? new \Exception(Psr7\Message::toString($e->getResponse()))
-				: $e);
+			: (
+				$e instanceof GuzzleException
+				? new \Exception(Message::toString($e->getRequest()) . Message::toString($e->getResponse()))
+				: $e
+			);
 	}
 }
