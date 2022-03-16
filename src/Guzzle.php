@@ -34,7 +34,7 @@ class Guzzle {
 	}
 
 
-	public static function handleException(\Exception $e): ?\Throwable
+	public static function handleException(\Exception $e): ?\Exception
 	{
 		return $e instanceof ServerException || $e instanceof ConnectException
 			? null
