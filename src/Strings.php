@@ -24,4 +24,19 @@ class Strings
 		);
 	}
 
+	/**
+	 * Check if string contains multibyte characters larger than or equal specified number of bytes, for example emoticons
+	 * @param string $s
+	 * @return bool
+	 */
+	public static function containsMultibyteCharacters(string $s, int $minBytes): bool
+	{
+		foreach (mb_str_split($s) as $c) {
+			if (strlen($c) >= $minBytes) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 }
