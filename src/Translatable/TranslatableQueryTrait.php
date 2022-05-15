@@ -7,7 +7,7 @@ use ADT\Utils\Translatable\TranslatableEntityInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Gedmo\Translatable\TranslatableListener;
-use ADT\BaseQuery\ResultSet;
+use ADT\DoctrineComponents\ResultSet;
 use Doctrine\ORM\EntityRepository;
 use Nette\Localization\ITranslator;
 
