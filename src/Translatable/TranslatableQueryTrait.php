@@ -7,8 +7,8 @@ use ADT\Utils\Translatable\TranslatableEntityInterface;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Gedmo\Translatable\TranslatableListener;
-use Kdyby\Doctrine\ResultSet;
-use Kdyby\Persistence\Queryable;
+use ADT\DoctrineComponents\ResultSet;
+use Doctrine\ORM\EntityRepository;
 use Nette\Localization\ITranslator;
 
 trait TranslatableQueryTrait
@@ -37,14 +37,14 @@ trait TranslatableQueryTrait
 		return $this;
 	}
 
-	protected function getQuery(Queryable $repository)
+	protected function getQuery(EntityRepository $repository)
 	{
 		return $this->applyHints(parent::getQuery($repository));
 
 
 	}
 
-	public function count(Queryable $repository = null, ResultSet $resultSet = null, Paginator $paginatedQuery = null)
+	public function count(EntityRepository $repository = null, ResultSet $resultSet = null, Paginator $paginatedQuery = null)
 	{
 		if (is_null($repository)) {
 			$repository = $this->em->getRepository($this->getEntityClass());
