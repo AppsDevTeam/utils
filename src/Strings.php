@@ -39,4 +39,30 @@ class Strings
 
 		return false;
 	}
+
+	/**
+	 * @param string $fullname
+	 * @return bool
+	 */
+	public static function validateFullname(string $fullname): bool
+	{
+		$pattern = [
+			"/([\s])+(-)/" => "-",
+			"/(-)([\s])+/" => "-",
+			"/([\s])+/" => " ",
+		];
+
+		$fullname = trim(preg_replace(array_keys($pattern), array_values($pattern), $fullname));
+
+		return (bool) preg_match("/^
+			(?=[\-.]*[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ][\-.]*) (?# Následující slovo obsahuje alespoň jedno písmeno)
+			(?:[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ\-.]){2,} (?# Matchnu slovo o min. dvou znacích)
+			(?:
+				\ *[ .,\-']\ * (?# Oddělovačem slova jsou mezery a .,-')
+				(?=[\-.]*[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ][\-.]*) (?# Následující slovo obsahuje alespoň jedno písmeno)
+				[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ\-.]{2,}
+			)+ (?# Slov může být více, ale min. dvě)
+			$
+		/mx", $fullname);
+	}
 }
