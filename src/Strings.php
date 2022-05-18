@@ -41,10 +41,10 @@ class Strings
 	}
 
 	/**
-	 * @param string $fullname
+	 * @param string $fullName
 	 * @return bool
 	 */
-	public static function validateFullname(string $fullname): bool
+	public static function validateFullName(string $fullName): bool
 	{
 		$pattern = [
 			"/([\s])+(-)/" => "-",
@@ -52,7 +52,7 @@ class Strings
 			"/([\s])+/" => " ",
 		];
 
-		$fullname = trim(preg_replace(array_keys($pattern), array_values($pattern), $fullname));
+		$fullName = trim(preg_replace(array_keys($pattern), array_values($pattern), $fullName));
 
 		return (bool) preg_match("/^
 			(?=[\-.]*[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ][\-.]*) (?# Následující slovo obsahuje alespoň jedno písmeno)
@@ -63,6 +63,6 @@ class Strings
 				[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ\-.]{2,}
 			)+ (?# Slov může být více, ale min. dvě)
 			$
-		/mx", $fullname);
+		/mx", $fullName);
 	}
 }
