@@ -55,12 +55,20 @@ class Strings
 		$fullName = trim(preg_replace(array_keys($pattern), array_values($pattern), $fullName));
 
 		return (bool) preg_match("/^
-			(?=[\-.]*[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ][\-.]*) (?# Následující slovo obsahuje alespoň jedno písmeno)
-			(?:[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ\-.]){2,} (?# Matchnu slovo o min. dvou znacích)
 			(?:
-				\ *[ .,\-']\ * (?# Oddělovačem slova jsou mezery a .,-')
-				(?=[\-.]*[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ][\-.]*) (?# Následující slovo obsahuje alespoň jedno písmeno)
-				[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ\-.]{2,}
+			(?=[\-.]*[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ][\-.]*) (?# Následující slovo obsahuje alespoň jedno písmeno)
+			(?:[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ\-.']){2,} (?# Matchnu slovo o min. dvou znacích)
+			|
+			- (?# Matchnu pomlčku mezi slovy)
+			)
+			(?:
+			\ *[ ]\ * (?# Oddělovačem slova jsou mezery a .,-')
+			(?:
+			(?=[\-.]*[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ][\-.']*) (?# Následující slovo obsahuje alespoň jedno písmeno)
+			[A-zÀ-ÿěščřžýáíéóúůďťňĎŇŤŠČŘŽÝÁÍÉÚŮĚÓ\-.,']{2,}
+			|
+			- (?# Matchnu pomlčku mezi slovy)
+			)
 			)+ (?# Slov může být více, ale min. dvě)
 			$
 		/mx", $fullName);
