@@ -1,8 +1,10 @@
 <?php
 namespace ADT\Utils;
 
+use Exception;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Psr7\Message;
 
@@ -34,13 +36,13 @@ class Guzzle {
 	}
 
 
-	public static function handleException(\Exception $e): ?\Exception
+	public static function handleException(Exception $e): ?Exception
 	{
 		return $e instanceof ServerException || $e instanceof ConnectException
 			? null
 			: (
-				$e instanceof GuzzleException
-				? new \Exception(Message::toString($e->getRequest()) . Message::toString($e->getResponse()))
+				$e instanceof RequestException
+				? new Exception(Message::toString($e->getRequest()) . ($e instanceof BadResponseException ? Message::toString($e->getResponse()) : $e->getMessage()))
 				: $e
 			);
 	}
