@@ -3,7 +3,6 @@
 namespace ADT\Utils\Locale;
 
 use Nette\Application\UI\Presenter;
-use Nette\DI\Container;
 
 trait LocaleTrait
 {
@@ -66,9 +65,9 @@ trait LocaleTrait
 					}
 				}
 				// pokud neni nastaven jazyk prohlizece (napriklad u robota) a neni nastavena zadna vychozi lokalizace,
-				// nastavime prvni fallback lokalizaci
+				// nastavime defaultni lokalizaci
 				elseif ($locale === null) {
-					$locale = $translator->getFallbackLocales()[0];
+					$locale = $translator->getDefaultLocale();
 				}
 
 				setcookie('locale', $locale, time() + (3600 * 24 * 14), '/');
