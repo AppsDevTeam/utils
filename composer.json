@@ -4,5 +4,9 @@
     "classmap": [
       "src/"
     ]
+  },
+  "require-dev": {
+    "guzzlehttp/guzzle": "^6.3|^7.0",
+    "nette/tester": "^2.4"
   }
 }

@@ -12,7 +12,7 @@ trait TErrorPresenter
 {
 	protected $exception;
 
-	protected bool $log404 = false;
+	protected bool $log404 = true;
 	protected bool $log500 = true;
 
 	/** @persistent */
