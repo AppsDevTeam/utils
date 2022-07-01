@@ -14,7 +14,7 @@ use Closure;
 class BackgroundQueue
 {
 	/**
-	 * @throws Exception
+	 * @throws BadRequestException
 	 * @throws TemporaryErrorException
 	 */
 	public static function handleException(Exception $e): void
@@ -26,20 +26,21 @@ class BackgroundQueue
 				throw new TemporaryErrorException($message);
 			}
 
-			throw new Exception($message);
+			throw new BadRequestException($message);
 		}
 
 		throw $e;
 	}
 
 	/**
-	 * @throws Exception
+	 * @throws BadRequestException
+	 * @throws TemporaryErrorException
 	 */
 	public static function handleGuzzleResult(Closure $closure)
 	{
 		try {
 			return $closure();
-		} catch (\Exception $e) {
+		} catch (Exception $e) {
 			self::handleException($e);
 		}
 	}
