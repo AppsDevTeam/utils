@@ -15,6 +15,7 @@ class BackgroundQueue
 {
 	/**
 	 * @throws Exception
+	 * @throws TemporaryErrorException
 	 */
 	public static function handleException(Exception $e): void
 	{
@@ -25,7 +26,7 @@ class BackgroundQueue
 				throw new TemporaryErrorException($message);
 			}
 
-			throw new Exception($e);
+			throw new Exception($message);
 		}
 
 		throw $e;
