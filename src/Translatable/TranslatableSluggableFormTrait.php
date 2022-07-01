@@ -7,7 +7,7 @@ use ADT\DoctrineForms\EntityFormMapper;
 use ADT\DoctrineForms\Form;
 use ADT\Forms\DynamicContainer;
 use App\Components\Forms\Base\EntityForm;
-use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Gedmo\Sluggable\SluggableListener;
@@ -16,7 +16,7 @@ use Nette\Forms\Controls\BaseControl;
 
 trait TranslatableSluggableFormTrait
 {
-	abstract public function getEntityManager(): EntityManager;
+	abstract public function getEntityManager(): EntityManagerInterface;
 	
 	abstract protected function getSluggableListener(): SluggableListener;
 
