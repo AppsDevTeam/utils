@@ -25,14 +25,17 @@ class Strings
 	}
 
 	/**
-	 * Check if string contains multibyte characters larger than or equal specified number of bytes, for example emoticons
-	 * @param string $s
-	 * @return bool
+	 * Check if string contains characters with code larger than specified code, for example emoticons
+	 * You can exclude some characters from check and thus allow them, for example €
 	 */
-	public static function containsMultibyteCharacters(string $s, int $minBytes): bool
+	public static function containsCharactersLargerThen(string $haystack, int $code, string $exclude = ''): bool
 	{
-		foreach (mb_str_split($s) as $c) {
-			if (strlen($c) >= $minBytes) {
+		foreach (mb_str_split($haystack) as $c) {
+			if (str_contains($exclude, $c)) {
+				continue;
+			}
+
+			if (mb_ord($c) > $code) {
 				return true;
 			}
 		}
