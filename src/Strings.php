@@ -6,10 +6,8 @@ class Strings
 {
 	/**
 	 * Transfer "😊 𝓚𝓪𝓻𝓲𝓷𝓪 𝓒𝓱𝓮𝓫𝓪𝓷 😊" to " Karina Cheban ", but leaves "Tomáš Kudělka" intact
-	 * @param $s
-	 * @return string
 	 */
-	public static function toLatin($s)
+	public static function toLatin(string $s): string
 	{
 		return preg_replace_callback(
 			"/[^\p{Common}\p{Latin}]|(?:
@@ -28,9 +26,9 @@ class Strings
 	 * Check if string contains characters with code larger than specified code, for example emoticons
 	 * You can exclude some characters from check and thus allow them, for example €
 	 */
-	public static function containsCharactersLargerThen(string $haystack, int $code, string $exclude = ''): bool
+	public static function containsCharactersLargerThen(string $s, int $code, string $exclude = ''): bool
 	{
-		foreach (mb_str_split($haystack) as $c) {
+		foreach (mb_str_split($s) as $c) {
 			if (str_contains($exclude, $c)) {
 				continue;
 			}
@@ -43,10 +41,6 @@ class Strings
 		return false;
 	}
 
-	/**
-	 * @param string $fullName
-	 * @return bool
-	 */
 	public static function validateFullName(string $fullName): bool
 	{
 		$pattern = [
