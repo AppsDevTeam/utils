@@ -23,6 +23,11 @@ trait TErrorPresenter
 		parent::__construct();
 
 		$this->onStartup[] = function() use ($router) {
+			// kvuli url typu /hsqldb%0a, ktera ani nematchne [<url .*>] catchall routu
+			if (trim($this->getHttpRequest()->getUrl()) !== (string) $this->getHttpRequest()->getUrl()) {
+				$this->redirectUrl($this->getHttpRequest()->getUrl());
+			}
+
 			$this->exception = $this->getRequest()->getParameter('exception');
 
 			// nemusi existovat zadna routa odpovidajici zadane url
