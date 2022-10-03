@@ -23,9 +23,10 @@ trait TErrorPresenter
 		parent::__construct();
 
 		$this->onStartup[] = function() use ($router) {
-			// kvuli url typu /hsqldb%0a, ktera ani nematchne [<url .*>] catchall routu
-			if (trim($this->getHttpRequest()->getUrl()) !== (string) $this->getHttpRequest()->getUrl()) {
-				$this->redirectUrl($this->getHttpRequest()->getUrl());
+			// kvuli url typu /adadsa%0D%0ASet-Cookie:crlfinjection=crlfinjection, ktera ani nematchne [<url .*>] catchall routu
+			preg_match('#^[^\s]+#', $this->getHttpRequest()->getUrl(), $matches);
+			if ($matches[0] !== (string) $this->getHttpRequest()->getUrl()) {
+				$this->redirectUrl($matches[0]);
 			}
 
 			$this->exception = $this->getRequest()->getParameter('exception');
