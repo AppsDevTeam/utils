@@ -29,7 +29,7 @@ class Strings
 	public static function containsCharactersLargerThen(string $s, int $code, string $exclude = ''): bool
 	{
 		foreach (mb_str_split($s) as $c) {
-			if (str_contains($exclude, $c)) {
+			if (mb_strpos($exclude, $c) !== false) {
 				continue;
 			}
 
