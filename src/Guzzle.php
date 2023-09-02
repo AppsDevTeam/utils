@@ -14,7 +14,7 @@ class Guzzle
 		if ($e instanceof GuzzleException) {
 			$message = '';
 			if ($e instanceof ConnectException || $e instanceof RequestException) {
-				$message = "REQUEST: " . Message::toString($e->getRequest()) . "\n RESPONSE: ";
+				$message = "--- REQUEST ---\n" . Message::toString($e->getRequest()) . "\n --- RESPONSE ---\n";
 			}
 			$message .= ($e instanceof RequestException ? Message::toString($e->getResponse()) : $e->getMessage());
 
