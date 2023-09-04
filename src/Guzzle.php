@@ -6,10 +6,14 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Message;
+use Throwable;
 
 class Guzzle
 {
-	public static function handleException(Exception $e): ?Exception
+	/**
+	 * @throws Throwable
+	 */
+	public static function handleException(Throwable $e): ?Exception
 	{
 		if ($e instanceof GuzzleException) {
 			$message = '';
