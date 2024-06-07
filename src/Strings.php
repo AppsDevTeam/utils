@@ -2,6 +2,8 @@
 
 namespace ADT\Utils;
 
+use Transliterator;
+
 class Strings
 {
 	/**
@@ -43,7 +45,7 @@ class Strings
 	
 	public static function removeDiacritics(string $s): string
 	{
-		$transliterator = \Transliterator::createFromRules(':: Any-Latin; :: Latin-ASCII; :: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;', Transliterator::FORWARD);
+		$transliterator = Transliterator::createFromRules(':: Any-Latin; :: Latin-ASCII; :: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;', Transliterator::FORWARD);
 		return $transliterator->transliterate($s);
 	}
 
