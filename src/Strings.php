@@ -40,6 +40,12 @@ class Strings
 
 		return false;
 	}
+	
+	public static function removeDiacritics(string $s): string
+	{
+		$transliterator = Transliterator::createFromRules(':: Any-Latin; :: Latin-ASCII; :: NFD; :: [:Nonspacing Mark:] Remove; :: NFC;', Transliterator::FORWARD);
+		return $transliterator->transliterate($s);
+	}
 
 	public static function validateFullName(string $fullName): bool
 	{
