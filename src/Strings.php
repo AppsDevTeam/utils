@@ -78,4 +78,37 @@ class Strings
 			$
 		/mx", $fullName);
 	}
+
+	public static function convertToType($str)
+	{
+		if (!is_string($str)) {
+			return $str;
+		}
+
+		// Pokud řetězec obsahuje pouze číslice
+		if (ctype_digit($str)) {
+			// když začíná 0 a má víc jak 1 znak, vratíme string
+			if (strpos($str, '0') === 0 && strlen($str) > 1) {
+				return $str;
+			}
+			return (int)$str; // jinak vratíme integer
+		}
+
+		// Pokud řetězec obsahuje číslice a případně jednu desetinnou tečku, vratíme float
+		if (preg_match('/^\d+\.\d+$/', $str)) {
+			return (float)$str;
+		}
+
+		// Pro "true" a "false" vrátíme boolean
+		if (strtolower($str) === 'true') {
+			return true;
+		}
+
+		if (strtolower($str) === 'false') {
+			return false;
+		}
+
+		// V opačném případě vratíme původní řetězec
+		return $str;
+	}
 }
