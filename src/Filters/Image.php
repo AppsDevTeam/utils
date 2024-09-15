@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Filters;
+namespace ADT\Utils\Filters;
 
 use ADT\Utils\FileSystem;
 use Exception;
