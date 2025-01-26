@@ -23,7 +23,7 @@ trait CssModule
 	 * @param string|null $dir
 	 * @return array
 	 */
-	private function load(string $moduleName = 'index', string $dir = NULL): array 
+	private function load(string $moduleName = 'index', ?string $dir = NULL): array 
 	{
 		$dir = $dir ?? dirname($this->getReflection()->getFileName());
 		$filePath = $dir . "/$moduleName.module.scss.json";
