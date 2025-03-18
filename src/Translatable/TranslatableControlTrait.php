@@ -43,11 +43,9 @@ trait TranslatableControlTrait
 					->where('e.objectClass = :objectClass')
 					->andWhere('e.locale NOT IN (:locales)')
 					->andWhere('e.foreignKey = :foreignKey')
-					->setParameters([
-						'objectClass' => get_class($entity),
-						'locales' => $locales,
-						'foreignKey' => $entity->getId()
-					])
+					->setParameter('objectClass', get_class($entity))
+					->setParameter('locales', $locales)
+					->setParameter('foreignKey', $entity->getId())
 					->delete()
 					->getQuery()
 					->execute();
