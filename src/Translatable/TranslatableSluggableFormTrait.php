@@ -50,13 +50,11 @@ trait TranslatableSluggableFormTrait
 							->andWhere('e.content = :content')
 							->andWhere('e.foreignKey != :foreignKey')
 							->andWhere('e.field = :field')
-							->setParameters([
-								'locale' => $_locale,
-								'objectClass' => get_class($entity),
-								'content' => $slug,
-								'foreignKey' => $entity->getId(),
-								'field' => $slugField,
-							])
+							->setParameter('locale', $_locale)
+							->setParameter('objectClass', get_class($entity))
+							->setParameter('content', $slug)
+							->setParameter('foreignKey', $entity->getId())
+							->setParameter('field', $slugField)
 							->getQuery()
 							->getSingleResult();
 
