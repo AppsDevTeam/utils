@@ -61,7 +61,7 @@ class Image
 
 		$this->createImage($contents, $width, $height, $mode, $format, $this->path . '/' . $newFile);
 
-		return $newFile;
+		return '/' . $newFile;
 	}
 
 	private function isRemoteUrl(string $url): bool
