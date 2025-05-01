@@ -93,10 +93,7 @@ class Image
 		return preg_replace("/^https?:\/\//", "", $url);
 	}
 
-	/**
-	 * @throws ImageException
-	 */
-	public function createImageFromThumbnailUrl(string $url): void
+	public function createImageFromThumbnailUrl(string $url): bool
 	{
 		$info = pathinfo($url);
 		$format = $info['extension'];
@@ -108,7 +105,13 @@ class Image
 		$width = (int)array_pop($segments);
 		$originalFile = $info['dirname'] . '/' . implode('_', $segments) . '.' . $extension;
 
+		if (!file_exists($this->path . '/' . $originalFile)) {
+			return false;
+		}
+
 		$this->createImage(file_get_contents($this->path . '/' . $originalFile), $width, $height, $mode, static::ExtensionsToFormat[$format], $this->path . '/' . $this->dir . '/' . $url);
+
+		return true;
 	}
 
 	/**
