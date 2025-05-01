@@ -93,6 +93,9 @@ class Image
 		return preg_replace("/^https?:\/\//", "", $url);
 	}
 
+	/**
+	 * @throws ImageException
+	 */
 	public function createImageFromThumbnailUrl(string $url): bool
 	{
 		$info = pathinfo($url);
