@@ -146,4 +146,9 @@ class Image
 	{
 		return $this->path;
 	}
+
+	public function getDir(): string
+	{
+		return $this->dir;
+	}
 }
