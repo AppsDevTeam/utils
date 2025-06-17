@@ -8,6 +8,11 @@ use Exception;
 
 class Utils
 {
+	final static public function realEmpty($value): bool
+	{
+		return empty($value) && $value !== 0 && $value !== '0';
+	}
+
 	final public static function getDateTimeFromArray(array|string $data): ?DateTimeImmutable
 	{
 		if (!isset($data['date'], $data['timezone'], $data['timezone_type'])) {
