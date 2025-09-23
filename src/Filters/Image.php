@@ -51,13 +51,17 @@ class Image
 			}
 			$contents = file_get_contents($this->path . '/' . $url);
 
+			if ($this->isAnimatedGif($contents)) {
+				return $url;
+			}
+
 			list($urlWithoutExtension,) = $this->splitUrlOnLastDot($url);
 		}
 
 		$width = $width * $this->multiplier;
 		$height = $height * $this->multiplier;
 		$ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
-		$newFile =  $this->dir . '/' . $urlWithoutExtension . '_' . $width . '_' . $height . '_' . $mode .  '_' . $ext . '.' . self::FormatToExtensions[$format];
+		$newFile = $this->dir . '/' . $urlWithoutExtension . '_' . $width . '_' . $height . '_' . $mode . '_' . $ext . '.' . self::FormatToExtensions[$format];
 
 		$this->createImage($contents, $width, $height, $mode, $format, $this->path . '/' . $newFile);
 
@@ -73,6 +77,45 @@ class Image
 		}
 
 		return false;
+	}
+
+	/**
+	 * Thanks to ZeBadger for original example, and Davide Gualano for pointing me to it
+	 * Original at http://it.php.net/manual/en/function.imagecreatefromgif.php#59787
+	 **/
+	private function isAnimatedGif($fileContents): bool
+	{
+		$raw = $fileContents;
+
+		$offset = 0;
+		$frames = 0;
+		while ($frames < 2)
+		{
+			$where1 = strpos($raw, "\x00\x21\xF9\x04", $offset);
+			if ( $where1 === false )
+			{
+				break;
+			}
+			else
+			{
+				$offset = $where1 + 1;
+				$where2 = strpos( $raw, "\x00\x2C", $offset );
+				if ( $where2 === false )
+				{
+					break;
+				}
+				else
+				{
+					if ( $where1 + 8 == $where2 )
+					{
+						$frames ++;
+					}
+					$offset = $where2 + 1;
+				}
+			}
+		}
+
+		return $frames > 1;
 	}
 
 	private function splitUrlOnLastDot(string $url): array
