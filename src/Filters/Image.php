@@ -142,19 +142,32 @@ class Image
 	public function createImageFromThumbnailUrl(string $url): bool
 	{
 		$info = pathinfo($url);
+		if (empty($info['extension'])) {
+			return false;
+		}
 		$format = $info['extension'];
-		$fileinfo = pathinfo($info['filename']);
-		$segments = explode('_', $fileinfo['filename']);
+		if (!array_key_exists($format, static::ExtensionsToFormat)) {
+			return false;
+		}
+
+		if (empty($info['filename'])) {
+			return false;
+		}
+		$fileInfo = pathinfo($info['filename']);
+
+		if (empty($fileInfo['filename'])) {
+			return false;
+		}
+		$segments = explode('_', $fileInfo['filename']);
+
 		$extension = array_pop($segments);
 		$mode = (int)array_pop($segments);
 		$height = (int)array_pop($segments);
 		$width = (int)array_pop($segments);
 		$originalFile = $info['dirname'] . '/' . implode('_', $segments) . '.' . $extension;
-
 		if (!file_exists($this->path . '/' . $originalFile)) {
 			return false;
 		}
-
 		$this->createImage(file_get_contents($this->path . '/' . $originalFile), $width, $height, $mode, static::ExtensionsToFormat[$format], $this->path . '/' . $this->dir . '/' . $url);
 
 		return true;
