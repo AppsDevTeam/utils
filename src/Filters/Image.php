@@ -61,6 +61,10 @@ class Image
 		$width = $width * $this->multiplier;
 		$height = $height * $this->multiplier;
 		$ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
+		if ($ext === 'svg') {
+			return $url;
+		}
+
 		$newFile = $this->dir . '/' . $urlWithoutExtension . '_' . $width . '_' . $height . '_' . $mode . '_' . $ext . '.' . self::FormatToExtensions[$format];
 
 		$this->createImage($contents, $width, $height, $mode, $format, $this->path . '/' . $newFile);
