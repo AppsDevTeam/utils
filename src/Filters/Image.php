@@ -33,13 +33,15 @@ class Image
 	 */
 	public function format(string $url, int $width, int $height, int $mode = \Nette\Utils\Image::OrSmaller, int $format = IMAGETYPE_WEBP): string
 	{
+		$originalUrl = $url;
+
 		$isRemoteUrl = $this->isRemoteUrl($url);
 
 		// original file does not exist
 		if ($isRemoteUrl) {
 			$contents = @file_get_contents($url);
 			if (!$contents) {
-				return $url;
+				return $originalUrl;
 			}
 
 			list($urlWithoutExtension,) = $this->splitUrlOnLastDot($this->removeProtocol($url));
@@ -47,12 +49,12 @@ class Image
 		} else {
 			$url = trim($url, '/');
 			if (!file_exists($this->path . '/' . $url))  {
-				return $url;
+				return $originalUrl;
 			}
 			$contents = file_get_contents($this->path . '/' . $url);
 
 			if ($this->isAnimatedGif($contents)) {
-				return $url;
+				return $originalUrl;
 			}
 
 			list($urlWithoutExtension,) = $this->splitUrlOnLastDot($url);
@@ -62,7 +64,7 @@ class Image
 		$height = $height * $this->multiplier;
 		$ext = pathinfo(parse_url($url, PHP_URL_PATH), PATHINFO_EXTENSION);
 		if ($ext === 'svg') {
-			return $url;
+			return $originalUrl;
 		}
 
 		$newFile = $this->dir . '/' . $urlWithoutExtension . '_' . $width . '_' . $height . '_' . $mode . '_' . $ext . '.' . self::FormatToExtensions[$format];
