@@ -2,6 +2,7 @@
 
 namespace ADT\Utils;
 
+use Nette\Application\Attributes\Persistent;
 use Nette\Application\BadRequestException;
 use Nette\Application\Helpers;
 use Nette\Routing\Router;
@@ -15,7 +16,7 @@ trait TErrorPresenter
 	protected bool $log404 = true;
 	protected bool $log500 = true;
 
-	/** @persistent */
+	#[Persistent]
 	public $url;
 
 	public function __construct(Router $router)
