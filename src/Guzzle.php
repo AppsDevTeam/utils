@@ -5,7 +5,9 @@ use Exception;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\Message;
+use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 class Guzzle
@@ -20,14 +22,50 @@ class Guzzle
 		if ($e instanceof GuzzleException) {
 			$message = '';
 			if ($e instanceof ConnectException || $e instanceof RequestException) {
-				$message = "--- REQUEST ---\n" . self::sanitizeMessage(Message::toString($e->getRequest())) . "\n --- RESPONSE ---\n";
+				$message = "--- REQUEST ---\n" . self::sanitizeMessage(self::messageToString($e->getRequest())) . "\n --- RESPONSE ---\n";
 			}
-			$message .= ($e instanceof RequestException && $e->getResponse() ? self::sanitizeMessage(Message::toString($e->getResponse())) : $e->getMessage());
+			$message .= ($e instanceof RequestException && $e->getResponse() ? self::sanitizeMessage(self::messageToString($e->getResponse())) : $e->getMessage());
 
 			throw new Exception($message);
 		}
 
 		throw $e;
+	}
+
+	/**
+	 * Obdoba GuzzleHttp\Psr7\Message::toString(), ale tělo čte ze streamu jen do MAX_BODY_LENGTH.
+	 * Message::toString() načítá celé tělo do paměti, což u velkých těl (např. upload souboru
+	 * v multipart requestu) shodí proces na memory limitu ještě před ořezáním v sanitizeMessage().
+	 */
+	private static function messageToString(MessageInterface $message): string
+	{
+		if ($message instanceof RequestInterface) {
+			$msg = trim($message->getMethod() . ' ' . $message->getRequestTarget()) . ' HTTP/' . $message->getProtocolVersion();
+			if (!$message->hasHeader('host')) {
+				$msg .= "\r\nHost: " . $message->getUri()->getHost();
+			}
+		} elseif ($message instanceof ResponseInterface) {
+			$msg = 'HTTP/' . $message->getProtocolVersion() . ' ' . $message->getStatusCode() . ' ' . $message->getReasonPhrase();
+		} else {
+			$msg = '';
+		}
+
+		foreach ($message->getHeaders() as $name => $values) {
+			$msg .= "\r\n" . $name . ': ' . implode(', ', $values);
+		}
+
+		$body = '';
+		$stream = $message->getBody();
+		if ($stream->isSeekable() && $stream->isReadable()) {
+			$size = $stream->getSize();
+			$stream->seek(0);
+			$body = $stream->read(self::MAX_BODY_LENGTH);
+			if ($size === null || $size > self::MAX_BODY_LENGTH) {
+				$body .= "\n\n... [truncated" . ($size !== null ? ', total ' . $size . ' bytes' : '') . ']';
+			}
+		}
+
+		return $msg . "\r\n\r\n" . $body;
 	}
 
 	private static function sanitizeMessage(string $message): string
