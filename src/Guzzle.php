@@ -71,7 +71,10 @@ class Guzzle
 	private static function sanitizeMessage(string $message): string
 	{
 		// Odstraneni binarnich dat (null byty apod.)
-		if (preg_match('/[^\x20-\x7E\x0A\x0D\t]/u', $message)) {
+		// Pozor: bez modifikatoru "u" — s nim preg_match na nevalidnim UTF-8 (tzn. prave na
+		// binarnich datech) vraci false misto 1 a binarka by prosla dal do zpravy vyjimky.
+		// Ta pak konci treba v mail(), ktere na null bajtu spadne na ValueError.
+		if (preg_match('/[^\x20-\x7E\x0A\x0D\t]/', $message)) {
 			// Najdeme konec hlavicek (prazdny radek)
 			$headerEnd = strpos($message, "\r\n\r\n");
 			if ($headerEnd === false) {

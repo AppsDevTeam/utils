@@ -54,7 +54,10 @@ trait TErrorPresenter
 			$route = $routeList->createRoute('[<url .*>]', $presenterName . ':' . $this->getAction());
 			$routeList->prepend($route);
 
-			$params = $route->match($this->getHttpRequest());
+			// routa se nemusi trefit (napriklad kdyz ma modul vlastni masku), a match()
+			// pak vraci null - loadState() by na nem skoncil TypeErrorem, tedy chybou 500
+			// z kazde neexistujici stranky
+			$params = $route->match($this->getHttpRequest()) ?? [];
 
 			// je potreba, aby fungovaly persistentni parametry, napriklad "locale"
 			$this->loadState($params);
@@ -72,13 +75,33 @@ trait TErrorPresenter
 				if ($this->exception instanceof BadRequestException && $this->log404) {
 					echo "<script>" . PHP_EOL;
 					require __DIR__ . '/assets/bot-detector.js';
-					echo "new BotDetector({ callback: function(result) { if (!result.isBot) navigator.sendBeacon('" . $this->link('404!', ['referrer' => $this->getHttpRequest()->getReferer() ? $this->getHttpRequest()->getReferer()->getAbsoluteUrl() : null]) . "'); } }).monitor();" . PHP_EOL;
+					$link = $this->link('404!', ['referrer' => $this->getHttpRequest()->getReferer() ? $this->getHttpRequest()->getReferer()->getAbsoluteUrl() : null]);
+					echo "new BotDetector({ callback: function(result) { if (!result.isBot) navigator.sendBeacon(" . $this->encodeJsString($link) . "); } }).monitor();" . PHP_EOL;
 					echo "</script>";
 				} elseif (!$this->exception instanceof BadRequestException && $this->log500) {
 					Debugger::log($this->exception, ILogger::EXCEPTION);
 				}
 			});
 		};
+	}
+
+	/**
+	 * Retezcovy literal pro vlozeni do inline <script>.
+	 *
+	 * Odkaz se sklada z cesty pozadavku, tedy ze vstupu od navstevnika. Driv se vypisoval
+	 * mezi rucne psane apostrofy, takze apostrof v ceste retezec ukoncil a zbytek se spustil
+	 * jako kod - reflektovane XSS bez prihlaseni, na kterekoli strance 404.
+	 *
+	 * JSON_HEX_* je tu navic k samotnemu json_encode(): bez nich by v retezci mohlo zustat
+	 * `</script>`, ktere ukonci cely skript uz pri parsovani HTML, jeste nez se resi
+	 * JavaScript. Lomitka naopak escapovat nepotrebujeme, jen by odkaz znecitelnila.
+	 */
+	private function encodeJsString(string $value): string
+	{
+		return json_encode(
+			$value,
+			JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+		);
 	}
 
 	public function handle404(?string $referrer)
