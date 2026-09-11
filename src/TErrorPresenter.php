@@ -73,7 +73,7 @@ trait TErrorPresenter
 
 			register_shutdown_function(function () {
 				if ($this->exception instanceof BadRequestException && $this->log404) {
-					echo "<script>" . PHP_EOL;
+					echo "<script" . $this->getCspNonceAttribute() . ">" . PHP_EOL;
 					require __DIR__ . '/assets/bot-detector.js';
 					$link = $this->link('404!', ['referrer' => $this->getHttpRequest()->getReferer() ? $this->getHttpRequest()->getReferer()->getAbsoluteUrl() : null]);
 					echo "new BotDetector({ callback: function(result) { if (!result.isBot) navigator.sendBeacon(" . $this->encodeJsString($link) . "); } }).monitor();" . PHP_EOL;
@@ -83,6 +83,27 @@ trait TErrorPresenter
 				}
 			});
 		};
+	}
+
+	/**
+	 * Atribut `nonce` pro inline <script>, kdyz aplikace bezi s CSP pouzivajici nonce.
+	 *
+	 * Bez nej by se skript pri politice bez `'unsafe-inline'` neprovedl a hlaseni 404 by
+	 * tise prestalo fungovat. Hodnota se cte z uz odeslane hlavicky, takze pro aplikaci
+	 * neni potreba nic nastavovat - staci mit v konfiguraci `script-src: ["'nonce'"]`
+	 * (Nette ho dosadi samo, viz HttpExtension).
+	 *
+	 * Kdyz nonce v politice neni, vraci prazdny retezec a chovani se nemeni.
+	 */
+	private function getCspNonceAttribute(): string
+	{
+		foreach (['Content-Security-Policy', 'Content-Security-Policy-Report-Only'] as $header) {
+			if (preg_match("~'nonce-([^']+)'~", (string) $this->getHttpResponse()->getHeader($header), $matches)) {
+				return ' nonce="' . htmlspecialchars($matches[1], ENT_QUOTES, 'UTF-8') . '"';
+			}
+		}
+
+		return '';
 	}
 
 	/**
