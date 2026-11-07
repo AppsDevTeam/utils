@@ -2,9 +2,7 @@
 namespace ADT\Utils;
 
 use Exception;
-use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\GuzzleException;
-use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -20,11 +18,17 @@ class Guzzle
 	public static function handleException(Throwable $e): ?Exception
 	{
 		if ($e instanceof GuzzleException) {
+			// Guzzle 7 má request u ConnectException a RequestException a odpověď (nepovinně)
+			// u RequestException; Guzzle 8 má request u každé TransferException a odpověď jen
+			// u ResponseException - RequestException::getResponse() už neexistuje
+			$request = method_exists($e, 'getRequest') ? $e->getRequest() : null;
+			$response = method_exists($e, 'getResponse') ? $e->getResponse() : null;
+
 			$message = '';
-			if ($e instanceof ConnectException || $e instanceof RequestException) {
-				$message = "--- REQUEST ---\n" . self::sanitizeMessage(self::messageToString($e->getRequest())) . "\n --- RESPONSE ---\n";
+			if ($request instanceof RequestInterface) {
+				$message = "--- REQUEST ---\n" . self::sanitizeMessage(self::messageToString($request)) . "\n --- RESPONSE ---\n";
 			}
-			$message .= ($e instanceof RequestException && $e->getResponse() ? self::sanitizeMessage(self::messageToString($e->getResponse())) : $e->getMessage());
+			$message .= ($response instanceof ResponseInterface ? self::sanitizeMessage(self::messageToString($response)) : $e->getMessage());
 
 			throw new Exception($message);
 		}
