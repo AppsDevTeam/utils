@@ -125,9 +125,22 @@ trait TErrorPresenter
 		);
 	}
 
+	/**
+	 * Odkaz signalu je v kazde strance 404, zavolat ho muze kdokoli. Loguje se proto jen POST
+	 * ze sendBeacon a hodnoty od navstevnika jsou zkracene a bez ridicich znaku - jinak by
+	 * jeden pozadavek zapsal do logu cokoli (falesne radky, megabajty).
+	 */
 	public function handle404(?string $referrer)
 	{
-		Debugger::log('Error 404 with ' . ($referrer ?: 'no' ) . ' referrer (' . $_SERVER['HTTP_USER_AGENT'] . '; ' . $_SERVER['REMOTE_ADDR'] . ')', '404');
+		if ($this->getHttpRequest()->isMethod('POST')) {
+			Debugger::log('Error 404 with ' . (self::logValue($referrer) ?: 'no') . ' referrer ('
+				. self::logValue($_SERVER['HTTP_USER_AGENT'] ?? null) . '; ' . $_SERVER['REMOTE_ADDR'] . ')', '404');
+		}
 		die();
+	}
+
+	private static function logValue(?string $value): string
+	{
+		return mb_substr(preg_replace('~[\x00-\x1F\x7F]+~u', ' ', (string) $value) ?? '', 0, 300);
 	}
 }
