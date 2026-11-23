@@ -2,7 +2,6 @@
 
 namespace ADT\Utils\Translatable;
 
-use ADT\DoctrineForms\Entity;
 use ADT\DoctrineForms\EntityFormMapper;
 use ADT\DoctrineForms\Form;
 use ADT\Forms\DynamicContainer;
